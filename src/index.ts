@@ -27,11 +27,17 @@ app.use(compression({ level: 6 }));
 app.use(json());
 app.use(urlencoded({ extended: true }));
 
-app.use("/task", taskRouter);
+connectToDatabase()
+  .then(() => {
+    app.use("/task", taskRouter);
 
-app.get("*", (req: Request, res: Response) => {
-  res.status(404);
-});
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+    app.get("*", (req: Request, res: Response) => {
+      res.status(404);
+    });
+    app.listen(PORT, () => {
+      console.log(`Server is running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to connect to the database", err);
+  });
